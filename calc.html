@@ -1,0 +1,248 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="public/react.js"></script>
+    <script src="public/react-dom.js"></script>
+    <script src="public/browser.min.js"></script>
+    <script src="https://unpkg.com/prop-types/prop-types.js"></script>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        box-sizing: border-box;
+    }
+
+    .page, #app {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+    }
+
+    .top {
+        width: 100%;
+        height: 30%;
+        background: #444;
+        text-align: right;
+        padding: 0 10px 10px 0;
+        color: white;
+        font-size: 30px;
+        align-items: flex-end;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .bottom {
+        width: 100%;
+        height: 70%;
+        background: #eee;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bottom li {
+        width: 25%;
+        height: 20%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ccc;
+    }
+
+    .oi {
+        background: #ddd;
+    }
+
+    .eq {
+        background: limegreen;
+    }
+</style>
+<body>
+<div id="app"></div>
+</body>
+</html>
+<script type="text/babel">
+    class Top extends React.Component {
+        constructor() {
+            super();
+        }
+
+        render() {
+            let {number} = this.props
+            return (
+                    <div className="top">{number}</div>
+            )
+        }
+    }
+    class Bottom extends React.Component {
+        constructor() {
+            super();
+        }
+
+        render() {
+            let {list, exp, eq, oi, sq, ce, qy, ac} = this.props
+            let lis = list.map((v, i) => {
+                if (v.type == 'o') {
+                    return (<li key={i} className="oi" onClick={() => oi(v.name)}>{v.name}</li>)
+                } else if (v.type == 'eq') {
+                    return (<li key={i} className="eq" onClick={() => eq()}>{v.name}</li>)
+                } else if (v.type == 'number') {
+                    return (<li key={i} onClick={() => exp(v.name)}>{v.name}</li>)
+                } else {
+                    if (v.type == 'ac') {
+                        return (<li key={i} className="oi" onClick={() => ac()}>{v.name}</li>)
+                    } else if (v.type == 'sq') {
+                        return (<li key={i} className="oi" onClick={() => sq()}>{v.name}</li>)
+                    } else if (v.type == 'ce') {
+                        return (<li key={i} className="oi" onClick={() => ce()}>{v.name}</li>)
+                    }
+                }
+
+            });
+            return (
+                    <ul className="bottom">
+                        {lis}
+                    </ul>
+            )
+        }
+    }
+    class Page extends React.Component {
+        constructor() {
+            super();
+            this.state = {
+                number: "",
+                str: "",
+                num: "0",
+                list: [
+                    {name: "CE", type: 'ce'},
+                    {name: "%", type: 'o'},
+                    {name: "x*2", type: 'sq'},
+                    {name: "/", type: 'o'},
+                    {name: "1", type: 'number'},
+                    {name: "2", type: 'number'},
+                    {name: "3", type: 'number'},
+                    {name: "+", type: 'o'},
+                    {name: "4", type: 'number'},
+                    {name: "5", type: 'number'},
+                    {name: "6", type: 'number'},
+                    {name: "-", type: 'o'},
+                    {name: "7", type: 'number'},
+                    {name: "8", type: 'number'},
+                    {name: "9", type: 'number'},
+                    {name: "*", type: 'o'},
+                    {name: "AC", type: 'ac'},
+                    {name: "0", type: 'number'},
+                    {name: ".", type: 'number'},
+                    {name: "=", type: 'eq'},
+                ]
+            }
+            this.exp = this.exp.bind(this)
+            this.oi = this.oi.bind(this)
+            this.sq = this.sq.bind(this)
+            this.ac = this.ac.bind(this)
+            this.ce = this.ce.bind(this)
+            this.eq = this.eq.bind(this)
+        }
+
+        exp(v) {
+            if(v=='.'){
+                if(this.state.str.includes('.')){
+                    return
+                }else {
+                    this.setState({
+                        number: this.state.number + v,
+                        str: this.state.str + v
+                    })
+                }
+            }else {
+                this.setState({
+                    number: this.state.number + v,
+                    str: this.state.str + v
+                })
+            }
+        }
+
+        oi(v) {
+            let str = this.state.number
+            let oi = "+-*/%"
+            if (!oi.includes(str[str.length - 1])) {
+                let num = eval(str)
+                this.setState({
+                    str: "",
+                    number: num + v,
+                    num: num
+                })
+            } else {
+                return
+            }
+
+        }
+
+        sq() {
+            let num=this.state.str?this.state.str:this.state.num
+            let a=eval(num+'**2')
+            this.setState({
+                num:a,
+                str:"",
+                number:a
+            })
+        }
+
+        ac() {
+            this.setState({
+                number: "",
+                num: "0",
+                str: ''
+            })
+        }
+
+
+
+        ce() {
+            let str = this.state.number+""
+            let ind=str.length-this.state.str.length;
+            let num=str.substr(0,ind)
+            this.setState({
+                str: " ",
+                number:num
+            })
+        }
+
+
+        eq() {
+            let str = this.state.number
+            let oi = "+-*/%"
+            if (oi.includes(str[str.length - 1])) {
+                str = str.substr(0, str.length - 1)
+            }
+            let num = eval(str)
+            console.log(str)
+            this.setState({
+                str: '',
+                number: num ? num : 0,
+                num: num ? num : 0
+            })
+        }
+
+        render() {
+            let {list, number, num, str} = this.state
+            return (
+                    <div className="page">
+                        <Top number={str ? str : num}/>
+                        <Bottom list={list} exp={this.exp} eq={this.eq} sq={this.sq} oi={this.oi} ac={this.ac}
+                                ce={this.ce} />
+                    </div>
+            )
+        }
+    }
+    ReactDOM.render(<Page/>, document.querySelector('#app'))
+</script>
